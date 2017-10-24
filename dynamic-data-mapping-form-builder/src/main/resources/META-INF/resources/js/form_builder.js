@@ -5,13 +5,21 @@ AUI.add(
 
 		var FormBuilderConfirmDialog = Liferay.DDM.FormBuilderConfirmationDialog;
 
+		var FormBuilderUtil = Liferay.DDM.FormBuilderUtil;
+
 		var FieldSets = Liferay.DDM.FieldSets;
 
 		var FieldTypes = Liferay.DDM.Renderer.FieldTypes;
 
-		var FormBuilderUtil = Liferay.DDM.FormBuilderUtil;
+		var CSS_RESIZE_COL_DRAGGABLE = A.getClassName('layout', 'builder', 'resize', 'col', 'draggable');
+
+		var CSS_RESIZE_COL_DRAGGABLE_BORDER = A.getClassName('layout', 'builder', 'resize', 'col', 'draggable', 'border');
+
+		var CSS_RESIZE_COL_DRAGGABLE_HANDLE = A.getClassName('layout', 'builder', 'resize', 'col', 'draggable', 'handle');
 
 		var Lang = A.Lang;
+
+		var CSS_EDIT_FIELD_BUTTON = A.getClassName('lfr-edit-field');
 
 		var CSS_FIELD = A.getClassName('form', 'builder', 'field');
 
@@ -30,6 +38,12 @@ AUI.add(
 		var TPL_REQURIED_FIELDS = '<label class="hide required-warning">{message}</label>';
 
 		var Util = Liferay.DDM.Renderer.Util;
+
+		var MOVE_COLUMN_CONTAINER = '<div class="' + CSS_RESIZE_COL_DRAGGABLE_BORDER + '"></div>' +
+			'<div class="' + CSS_RESIZE_COL_DRAGGABLE_HANDLE + '">' +
+			Liferay.Util.getLexiconIconTpl('horizontal-scroll') + '</div>';
+
+		var MOVE_COLUMN_TPL = '<div class="' + CSS_RESIZE_COL_DRAGGABLE + ' lfr-tpl">' + MOVE_COLUMN_CONTAINER + '</div>';
 
 		var FormBuilder = A.Component.create(
 			{
@@ -130,7 +144,7 @@ AUI.add(
 						var boundingBox = instance.get('boundingBox');
 
 						instance._eventHandlers = [
-							boundingBox.delegate('click', A.bind('_afterFieldClick', instance), '.' + CSS_FIELD, instance),
+							boundingBox.delegate('click', A.bind('_afterFieldClick', instance), '.' + CSS_EDIT_FIELD_BUTTON, instance),
 							boundingBox.delegate('click', instance._onClickPaginationItem, '.pagination li a'),
 							instance.after('editingLanguageIdChange', instance._afterEditingLanguageIdChange),
 							instance.after('liferay-ddm-form-builder-field-list:fieldsChange', instance._afterFieldListChange, instance),
@@ -532,7 +546,7 @@ AUI.add(
 					_afterFieldClick: function(event) {
 						var instance = this;
 
-						var field = event.currentTarget.getData('field-instance');
+						var field = event.currentTarget.ancestor('.' + CSS_FIELD).getData('field-instance');
 
 						instance.editField(field);
 					},
@@ -547,7 +561,9 @@ AUI.add(
 						var instance = this;
 
 						instance._fieldToolbar.destroy();
+
 						instance.getFieldSettingsPanel();
+						instance._renderArrowActions();
 						instance._renderFields();
 						instance._renderPages();
 						instance._renderRequiredFieldsWarning();
@@ -595,6 +611,16 @@ AUI.add(
 						instance.createNewField(event.fieldType);
 					},
 
+					_createFieldActions: function() {
+						var instance = this;
+
+						instance.eachFields(
+							function(field) {
+								field.get('container').append(instance._getFieldActionsLayout());
+							}
+						);
+					},
+
 					_currentRowIndex: function() {
 						var instance = this;
 
@@ -613,6 +639,16 @@ AUI.add(
 						}
 
 						return 0;
+					},
+
+					_getFieldActionsLayout: function() {
+						var instance = this;
+
+						return '<div class="lfr-ddm-field-actions-container">' +
+							'<button class="btn btn-monospaced btn-sm label-primary lfr-edit-field" type="button">' + Liferay.Util.getLexiconIconTpl('pencil') + '</button>' +
+							'<button class="btn btn-monospaced btn-sm label-primary" type="button">' + Liferay.Util.getLexiconIconTpl('move') + '</button>' +
+							'<button class="btn btn-monospaced btn-sm label-primary" type="button">' + Liferay.Util.getLexiconIconTpl('trash') + '</button>' +
+							'</div>';
 					},
 
 					_getFieldSettingsPanel: function(fieldSettingsPanel) {
@@ -753,6 +789,19 @@ AUI.add(
 						instance.showFieldTypesPanel();
 					},
 
+					_renderArrowActions: function() {
+						var instance = this;
+
+						instance._layoutBuilder.TPL_RESIZE_COL_DRAGGABLE = MOVE_COLUMN_TPL;
+						instance._layoutBuilder._uiSetEnableResizeCols(instance._layoutBuilder.get('enableResizeCols'));
+
+						instance.get('boundingBox').all('.' + CSS_RESIZE_COL_DRAGGABLE + ':not(.lfr-tpl)').each(
+							function(handler) {
+								handler.html(MOVE_COLUMN_CONTAINER);
+							}
+						);
+					},
+
 					_renderContentBox: function() {
 						var instance = this;
 
@@ -787,6 +836,7 @@ AUI.add(
 								var row = instance.getFieldRow(field);
 
 								activeLayout.normalizeColsHeight(new A.NodeList(row));
+								field.get('container').append(instance._getFieldActionsLayout());
 							}
 						);
 
