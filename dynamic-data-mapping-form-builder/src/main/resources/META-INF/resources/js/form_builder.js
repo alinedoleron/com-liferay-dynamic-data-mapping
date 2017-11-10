@@ -149,7 +149,6 @@ AUI.add(
 							boundingBox.delegate('click', A.bind('_afterFieldClick', instance), '.' + CSS_EDIT_FIELD_BUTTON, instance),
 							boundingBox.delegate('click', instance._onClickPaginationItem, '.pagination li a'),
 							boundingBox.delegate('click', instance._removeFieldCol, '.lexicon-icon-trash', instance),
-							//boundingBox.delegate('mousedown', instance._applyDragAndDrop, '.layout-col-content', instance),
 							instance.after('editingLanguageIdChange', instance._afterEditingLanguageIdChange),
 							instance.after('liferay-ddm-form-builder-field-list:fieldsChange', instance._afterFieldListChange, instance),
 							instance.after('render', instance._afterFormBuilderRender, instance),
@@ -165,6 +164,9 @@ AUI.add(
 						visitor.set('fieldHandler', instance.destroyField);
 
 						instance._sidebar.destroy();
+						
+						instance.sortable1.delegate.destroy();
+						instance.sortable1.destroy();
 
 						visitor.visit();
 
@@ -587,9 +589,7 @@ AUI.add(
 						var instance = this;
 
 						instance._fieldToolbar.destroy();
-						
 						instance.getFieldSettingsPanel();
-						instance._applyDragAndDrop();
 						instance._renderArrowActions();
 						instance._renderFields();
 						instance._renderPages();
@@ -597,6 +597,46 @@ AUI.add(
 						instance._syncRequiredFieldsWarning();
 						instance._syncRowsLastColumnUI();
 						instance._syncRowIcons();
+						instance._formatNewDropRows();
+						instance._applyDragAndDrop();
+					},
+
+					_formatNewDropRows: function() {
+						var instance = this;
+						var newRows = [];
+						var rowsIndex = [];
+						var rows = instance.get('context').pages[instance._getActiveLayoutIndex()].rows;
+
+						instance.get('boundingBox').all('.layout-row-container-row').each(function(el, index) {
+							if (el.one('.'+CSS_FIELD)) {
+								rowsIndex.push(index);
+							}
+						});
+
+						rows.forEach(function(row, index) {
+							if (rowsIndex.indexOf(index) != -1) {
+								newRows.push({
+									columns: [{
+										size: 12,
+										fields: []
+									}]
+								});
+								newRows.push(row);
+							}
+
+							if (rows.length - 1 == index) {
+								newRows.push({
+									columns: [{
+										size: 12,
+										fields: []
+									}]
+								});
+							}
+						});
+						
+						instance.get('context').pages[instance._getActiveLayoutIndex()].rows = newRows;
+						// var layouts = instance._valueLayouts();
+						// instance._set('layouts', layouts);
 					},
 
 					_afterLayoutColsChange: function(event) {
@@ -640,193 +680,176 @@ AUI.add(
 
 					_applyDragAndDrop: function(event) {
 						var instance = this;
-						var fieldNodeStart;
-						var fieldColStart;
-						var fieldNodeEnd;
-						var fieldColEnd;
-						var sortable1;
-						var proxyActive;
-						var activeDropEnter;
-						var listMap = new Map();
-						var fieldDropped = false;
-						var auxFieldColStart;
-						var pageFields = [];
 
-						var gridDOM = [];
+						// Remove all box
+						instance._removeAddWrapper();
+						instance._formatGridLayout();
+						instance._addDragAndDropActions();
+					},
 
-						var rows  = A.all('.layout-row').get('nodes');
+					_addDragAndDropActions: function() {
+						var instance = this;
 
-						rows.forEach(function(row) {
-							gridDOM.push(row.all('.col').get('nodes'));
+						var sortable1 = instance.sortable1 = new A.SortableLayout({
+							delegateConfig: {
+								//invalid: '.invalidDrag',
+								useShim: false,
+								target: false
+							},
+							dragNodes: '.layout-col-content',
+							dropNodes: '.layout-row .col-empty',
+							proxyNode: '<div></div>'
 						});
 
-						console.log('gridDOM',gridDOM);
+						var activeDropColStack = [];
 
-						var layouts = instance.get('layouts');
+						var addToStack = function(node) {
+							clearStack();
 
-						console.log('layouts',layouts);
+							node.addClass('col-empty-over');
+							activeDropColStack.push(node);
+						}
 
-						var context = instance.get('context');
-
-						console.log('context',context);
-
-						var container = instance.get('container');
-						console.log('container',container);
-						//console.log('instance.get(layouts) inicio', instance.get('layouts'));
-
-
-						//var context = Liferay.component('_com_liferay_dynamic_data_lists_form_web_portlet_DDLFormAdminPortlet_formBuilder').get('context');
-						
-						//remove all add boxes
-						// var listCols = A.all('.form-builder-field-list-empty').get('node');
-						// if(listCols) {
-						// 	listCols.forEach(function(element) {
-						// 		if(!element.ancestor('.col-empty')) {
-						// 			element.ancestor('.col').addClass('col-empty');
-						// 			element.ancestor('.col').empty();
-						// 		}
-						// 	});
-						// 	A.all('.form-builder-field-list-add-container').remove();
-						// }
-
-
-						sortable1 = new A.SortableLayout({
-								delegateConfig: {
-									//invalid: '.invalidDrag',
-									target: false
-								},
-								dragNodes: '.layout-col-content',
-								dropNodes: '.layout-row .col-empty',
-								proxyNode: '<div></div>'
-							});
+						var clearStack = function() {
+							while (activeDropColStack.length > 0) {
+								activeDropColStack.pop().removeClass('col-empty-over');
+							}
+						};
 
 						sortable1.after('drag:start',function (event) {
-			
-							console.log("START");
-							fieldNodeStart = event.target.get('node');
-							fieldColStart = fieldNodeStart.ancestor('.col');
-
+							console.log("START Dragging");
+							var fieldNodeStart = event.target.get('node');
+							var fieldColStart = fieldNodeStart.ancestor('.col');
+							var proxyActive;
+							
 							fieldNodeStart.addClass('hidden');
+							fieldColStart.addClass('current-dragging');
 							fieldColStart.addClass('col-empty');
-							fieldColStart.addClass('col-empty-over');
-							listMap.set(fieldColStart._yuid, fieldColStart);
-		
-							auxFieldColStart = fieldColStart;
+
+							sortable1.addDropNode(fieldColStart);
+
+							// A.DD.DDM._activateTargets();
+
+							addToStack(fieldColStart);
 
 							proxyActive = A.one('.yui3-dd-proxy');
-							if(proxyActive) {
+							if (proxyActive) {
 								proxyActive.empty();
 								proxyActive.append(fieldNodeStart._node.innerHTML);
 							}
-
-							
-							
 						});
 
-						sortable1.on('drag:enter',function (event) {
-							console.log("ENTER");
-							var instance = this;
-		
-								if(fieldColStart) {
-									listMap.get(fieldColStart._yuid).removeClass('col-empty-over');
-									listMap.delete(fieldColStart._yuid);
-								}
-								
-
-								//console.log('listMap Before',listMap);
-		
-								activeDropEnter = instance.activeDrop.get('node');
-								activeDropEnter.addClass('col-empty-over');
-								listMap.set(activeDropEnter._yuid, activeDropEnter);
-								//console.log('listMap After',listMap);
-			
-							
-							fieldColStart = null;
-							
-							
-						});
-
-						sortable1.on('drag:exit',function (event) {
-
-							var instance = this;
-							listMap.get(activeDropEnter._yuid).removeClass('col-empty-over');
-							listMap.delete(activeDropEnter._yuid);
-
+						sortable1.after('placeholderAlign', function(event) {
+							var activeDropNode = event.drop.get('node');
+							addToStack(activeDropNode);
 						});
 
 						sortable1.on('drag:end',function (event) {
-
-							fieldNodeEnd = event.target.get('node');
-							fieldColEnd = fieldNodeEnd.ancestor('.col');
-		
-							auxFieldColStart.addClass('col-empty');	
-							fieldColEnd.removeClass('col-empty'); 
-							fieldNodeStart.removeClass('hidden');
-							
-							listMap.forEach(function (element) {
-								element.removeClass('col-empty-over');
-							});
-
-							listMap.clear();
-
-							var activePage;
+							var fieldColStart = A.one('.current-dragging');
+							var fieldNodeEnd = event.target.get('node');
+							var fieldColEnd = fieldNodeEnd.ancestor('.col');
+							var context = instance.get('context');
+							var activePageIndex = instance._getActiveLayoutIndex();
 							var posRowStart;
 							var posColStart;
 							var posRowEnd;
 							var posColEnd;
+							console.log('contexto de nevinha:')
+							console.log(instance.get('context'))
 
-							gridDOM.forEach(function(cols, indexRow) {
+							fieldColStart.addClass('col-empty');
+							fieldColStart.removeClass('col-empty-over');
+							fieldNodeEnd.removeClass('hidden');
+							fieldColEnd.removeClass('col-empty');
+
+							fieldColStart.removeClass('current-dragging');
+							
+							instance.gridDOM.forEach(function(cols, indexRow) {
 								cols.forEach(function(col, indexCol) {
-									if(auxFieldColStart._node.id == col._node.id) {
+									if (fieldColStart._node.id == col._node.id) {
 										posRowStart = indexRow;
 										posColStart = indexCol;
-										return;
 									}
 								});
-							});
-
-							gridDOM.forEach(function(cols, indexRow) {
+								
+								A.Plugin[Drop]
+								
 								cols.forEach(function(col, indexCol) {
-									if(fieldColEnd._node.id == col._node.id) {
+									if (fieldColEnd._node.id == col._node.id) {
 										posRowEnd = indexRow;
 										posColEnd = indexCol;
-										return;
 									}
 								});
 							});
 
-							activePage = A.one('.form-builder-tabs-content li.active .progress-bar-step')._node.innerHTML;
+							var newValue = context.pages[activePageIndex].rows[posRowStart].columns[posColStart].fields;
+							var colDrop = A.DD.DDM.getDrop(fieldColEnd);
+							if (colDrop) {
+								colDrop.destroy();
+								sortable1.removeDropTarget(colDrop);
+							}
 
-							console.log('Na página: '+ activePage);
-							console.log('Saiu da linha ( '+ posRowStart + ' ) coluna ('+ posColStart +')');
-							console.log('Para a linha ( '+ posRowEnd + ' ) coluna ('+ posColEnd +')');
+							var field = fieldColEnd.one('.'+CSS_FIELD).getData('field-instance');
+							var row = field.get('content').ancestor('.layout-row');
 
-							
-							console.log('context antes 2', context);
+							instance.getActiveLayout().normalizeColsHeight(new A.NodeList(row));
 
-							var newValue = context.pages[activePage - 1].rows[posRowStart].columns[posColStart];
-							console.log('newValue',newValue.fields[0]);
-							console.log('posENd', context.pages[activePage - 1].rows[posRowEnd].columns[posColEnd]);
-							context.pages[activePage - 1].rows[posRowEnd].columns[posColEnd].fields = newValue.fields;
-							context.pages[activePage - 1].rows[posRowStart].columns[posColStart].fields = []; 
+							if (posRowEnd != posRowStart || (posRowEnd == posRowStart && posColEnd != posColStart)) {
+								context.pages[activePageIndex].rows[posRowEnd].columns[posColEnd].fields = newValue;
+								context.pages[activePageIndex].rows[posRowStart].columns[posColStart].fields = [];
+								
+								setTimeout(function() {
+									instance._formatNewDropRows();
+									instance._formatGridLayout();
+									instance._removeAddWrapper();
+								}, 0);
+							}
 
-							console.log('context depois', context);
-							console.log('instance depois', instance);
+							clearStack();
 
-							var layouts = instance._valueLayouts();
-
-							layouts = instance.set('layouts',layouts);
-							
-							
-							
-							sortable1.destroy();
-							instance._applyDragAndDrop();
-						
-
-
-
+							setTimeout(function() {
+								console.log(sortable1.delegate)
+								sortable1.delegate.destroy();
+								
+								var dropNodes = sortable1.get('dropNodes');
+								dropNodes.each(function(node) {
+									var drop = A.DD.DDM.getDrop(node);
+									if (drop) {
+										drop.destroy();
+										console.log(node);
+									}
+								});
+								
+								sortable1.destroy();
+								instance._applyDragAndDrop();
+							}, 0);
 						});
-						
+					},
+
+					_removeAddWrapper: function() {
+						var instance = this;
+						var listCols = A.all('.form-builder-field-list-empty');
+
+						if (listCols) {
+							listCols.get('node').forEach(function(element) {
+								if (!element.ancestor('.col-empty')) {
+									element.ancestor('.col').addClass('col-empty');
+									element.ancestor('.col').empty();
+								}
+							});
+							A.all('.form-builder-field-list-add-container').remove();
+						}
+					},
+
+					_formatGridLayout: function() {
+						var instance = this;
+						var rows  = A.all('.layout-row').get('nodes');
+
+						instance.gridDOM = [];
+
+						rows.forEach(function(row) {
+							instance.gridDOM.push(row.all('.col').get('nodes'));
+						});
 					},
 
 					_createFieldActions: function() {
@@ -1016,7 +1039,6 @@ AUI.add(
 						col = field.get('content').ancestor('.col').getData('layout-col');
 						field._col = col;
 						if (field) {
-
 							instance.openConfirmDeleteFieldDialog(
 								function() {
 									var layout = instance.getActiveLayout();
@@ -1035,7 +1057,7 @@ AUI.add(
 						var instance = this;
 
 						instance._layoutBuilder.TPL_RESIZE_COL_DRAGGABLE = MOVE_COLUMN_TPL;
-						instance._layoutBuilder._uiSetEnableResizeCols(instance._layoutBuilder.get('enableResizeCols'));
+						// instance._layoutBuilder._uiSetEnableResizeCols(instance._layoutBuilder.get('enableResizeCols'));
 
 						instance.get('boundingBox').all('.' + CSS_RESIZE_COL_DRAGGABLE + ':not(.lfr-tpl)').each(
 							function(handler) {
@@ -1129,7 +1151,6 @@ AUI.add(
 
 					_renderRowIcons: function() {
 						var instance = this;
-
 						var rows = A.all('.layout-row');
 
 						rows.each(

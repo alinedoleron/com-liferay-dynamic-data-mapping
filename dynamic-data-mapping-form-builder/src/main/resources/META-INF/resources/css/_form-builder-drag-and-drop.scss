@@ -1,56 +1,79 @@
 .form-builder {
+	.layout-col-content {
+		border-radius: 5px;
+		height: 100%;
+		padding: 0 32px;
+	}
 
-    .lexicon-icon-trash {
-        cursor: pointer;
-    }
+	fieldset[disabled] .form-control, .form-control[disabled] {
+		background-color: #869CAD;
+	}
 
-    .col .col-drag-move {
-        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-        cursor: -webkit-grabbing;
-        
-        
-    }
+	.form-builder-layout .layout-row-container-row .layout-row .col.col-empty.col-empty-over{
+		background-color: #F0F5FF;
+		border: 2px dashed #80ACFF;
+		border-radius: 4px;
+		opacity: 1;
+	}
 
-    .layout-col-content {
-        height: 100%;
-        padding: 0 32px;
-        border-radius: 5px;
-    }
+	div.form-builder-field-list-container {
+		padding: 0 20px 0 20px;
+		border: 1px solid transparent;
+		@include transition(border ease-out 0.3s);
 
-    fieldset[disabled] .form-control, .form-control[disabled] {
-        background-color: #869CAD;
-    }
+		div.lfr-ddm-field-actions-container {
+			position: absolute;
+			top: calc(-32px/2);
+			right: 0;
+			opacity: 0;
+			visibility: hidden;
+			@include transition(all ease 0.3s);
+		}
 
+		.btn {
+			margin-left: 7px;
+			border-color: #cdced9;
 
-    
-    .form-builder-layout
-    .layout-row-container-row .layout-row .col.col-empty.col-empty-over{
-        opacity: 1;
-        border-radius: 4px;
-        background-color: #f0f5ff;
-        border: 2px dashed #80acff;  
-        &:before {
-            content: 'Drop here';
-            color: #2e5aac;
-            font-size: 14px;
-            text-align: center;
+			&:hover {
+				cursor: pointer;
+			}
+		}
 
-        }
-        
-    }
+		&:hover {
+			border-color: #cdced9;
 
-    .hidden {
-        visibility: hidden;
-    }
-    
+			.form-builder-field {
+				cursor: default;
+			}
 
+			.lfr-ddm-field-actions-container {
+				opacity: 1;
+				visibility: visible;
+			}
+		}
+
+	}
+
+	.hidden {
+		visibility: hidden;
+	}
 }
 
 div.sortable-layout-drag-indicator {
-    background-color: rgba(17, 17, 17, 0);
+	background-color: rgba(17, 17, 17, 0);
 }
 
-.yui3-dd-proxy .form-builder-field-list-container{
-    height: 134px;
-    opacity: 0.85;
+.yui3-dd-proxy .form-builder-field-list-container {
+	height: 134px;
+	opacity: 0.85;
+
+	@include transform(translateY(-60px));
+
+	div.lfr-ddm-field-actions-container {
+		display: none;
+	}
+}
+
+.yui3-dd-proxy *, .yui3-dd-shim, .yui3-dd-proxy {
+	cursor: -webkit-grabbing!important;
 }

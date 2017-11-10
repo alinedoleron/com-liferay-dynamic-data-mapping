@@ -192,3 +192,11 @@
 		}
 	}
 }
+
+.form-builder-field-list-add-container {
+	display: none;
+}
+
+div.portlet-forms-admin .form-builder-layout .layout-row-container-row .layout-row .col {
+	min-height: 20px;
+}
