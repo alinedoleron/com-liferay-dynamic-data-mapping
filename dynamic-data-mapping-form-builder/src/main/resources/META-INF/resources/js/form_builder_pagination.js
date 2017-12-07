@@ -1,6 +1,10 @@
 AUI.add(
 	'liferay-ddm-form-builder-pagination',
 	function(A) {
+		var CSS_ACTIVE = 'active';
+
+		var	CSS_DISABLED = 'disabled';
+
 		var FormBuilderPagination = A.Component.create(
 			{
 				ATTRS: {
@@ -16,7 +20,7 @@ AUI.add(
 				prototype: {
 					CONTENT_TEMPLATE: '<ul class="pagination"></ul>',
 					ITEM_TEMPLATE: '<li class="{cssClass}"><a href="#">{content}</a></li>',
-					SUCCESS_PAGE_ITEM_TEMPLATE: '<li class="{cssClass}"><a href="#">{content}</a></li>',
+					SUCCESS_PAGE_ITEM_TEMPLATE: '<li class="{cssClass}" data-success-page="true"><a href="#">{content}</a></li>',
 
 					initializer: function() {
 						var instance = this;
@@ -74,6 +78,39 @@ AUI.add(
 						instance._renderItemsUI(instance.get('total'));
 					},
 
+					_onClickItem: function(event) {
+						var instance = this;
+
+						var	item = event.currentTarget;
+
+						if (item.hasClass(CSS_DISABLED) || item.hasClass(CSS_ACTIVE)) {
+							return;
+						}
+
+						var	items = instance.get('items');
+
+						var index = items.indexOf(item);
+						var	lastIndex = items.size() - 1;
+
+						switch (index) {
+						case 0:
+							instance.prev();
+							break;
+						case lastIndex:
+							instance.next();
+							break;
+						default:
+							instance._dispatchRequest(
+								{
+									page: index
+								}
+							);
+							break;
+						}
+
+						event.preventDefault();
+					},
+
 					_renderItemsUI: function(total) {
 						var instance = this;
 
@@ -93,7 +130,7 @@ AUI.add(
 
 						if (instance.get('successPage')) {
 							buffer += A.Lang.sub(
-								instance.ITEM_TEMPLATE,
+								instance.SUCCESS_PAGE_ITEM_TEMPLATE,
 								{
 									content: Liferay.Language.get('success-page'),
 									cssClass: 'pagination-success-page'
