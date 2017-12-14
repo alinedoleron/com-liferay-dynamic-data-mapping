@@ -1,10 +1,6 @@
 AUI.add(
 	'liferay-ddm-form-builder-pagination',
 	function(A) {
-		var CSS_ACTIVE = 'active';
-
-		var	CSS_DISABLED = 'disabled';
-
 		var FormBuilderPagination = A.Component.create(
 			{
 				ATTRS: {
@@ -76,39 +72,6 @@ AUI.add(
 						var instance = this;
 
 						instance._renderItemsUI(instance.get('total'));
-					},
-
-					_onClickItem: function(event) {
-						var instance = this;
-
-						var	item = event.currentTarget;
-
-						if (item.hasClass(CSS_DISABLED) || item.hasClass(CSS_ACTIVE)) {
-							return;
-						}
-
-						var	items = instance.get('items');
-
-						var index = items.indexOf(item);
-						var	lastIndex = items.size() - 1;
-
-						switch (index) {
-						case 0:
-							instance.prev();
-							break;
-						case lastIndex:
-							instance.next();
-							break;
-						default:
-							instance._dispatchRequest(
-								{
-									page: index
-								}
-							);
-							break;
-						}
-
-						event.preventDefault();
 					},
 
 					_renderItemsUI: function(total) {
