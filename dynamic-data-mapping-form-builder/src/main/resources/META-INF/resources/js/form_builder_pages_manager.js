@@ -281,36 +281,6 @@ AUI.add(
 						instance._toggleNodeDisabled(titleNode, disabled);
 					},
 
-					_addPage: function() {
-						var instance = this;
-
-						var quantity = instance.get('pagesQuantity');
-
-						var pagination = instance._getPagination();
-
-						instance.set('pagesQuantity', quantity + 1);
-
-						instance.fire(
-							'add',
-							{
-								quantity: quantity
-							}
-						);
-
-						pagination.set('page', instance.get('pagesQuantity'));
-
-						if (quantity === 0) {
-							instance.fire(
-								'updatePageContent',
-								{
-									newVal: 1
-								}
-							);
-						}
-
-						instance._showLayout();
-					},
-
 					_addWizardPage: function() {
 						var instance = this;
 
