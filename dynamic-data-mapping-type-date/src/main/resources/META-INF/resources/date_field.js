@@ -127,16 +127,16 @@ AUI.add(
 						container.one('.form-group').removeClass('has-error');
 					},
 
-					showErrorMessage: function() {
+					setValue: function(isoDate) {
 						var instance = this;
 
-						DateField.superclass.showErrorMessage.apply(instance, arguments);
+						DateField.superclass.setValue.apply(instance, arguments);
 
-						var container = instance.get('container');
+						var formattedDate = instance.formatDate(isoDate);
 
-						var inputGroup = container.one('.input-group-container');
+						instance.getTriggerNode().val(formattedDate);
 
-						inputGroup.insert(container.one('.form-feedback-indicator'), 'after');
+						instance.set('value', isoDate);
 					},
 
 					_afterSelectionChange: function(event) {
