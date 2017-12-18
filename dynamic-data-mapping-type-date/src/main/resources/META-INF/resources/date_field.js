@@ -214,6 +214,21 @@ AUI.add(
 						instance.getTriggerNode().focus();
 
 						datePicker.show();
+					},
+
+					_onStringType: function(event) {
+						var instance = this;
+
+						var input = event.target._node.value;
+						var formattedDate;
+						var popover = datePicker.getPopover();
+
+						popover.set('visible', false);
+
+						formattedDate = instance._loadMaskPlaceholder(input);
+						instance._validadeFieldDate(input, formattedDate);
+					},
+
 					}
 				}
 			}
