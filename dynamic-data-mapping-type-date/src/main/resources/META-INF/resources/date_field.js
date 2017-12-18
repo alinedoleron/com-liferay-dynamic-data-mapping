@@ -197,6 +197,10 @@ AUI.add(
 					_onActiveInputChange: function(event) {
 						var instance = this;
 
+						formattedDate = formattedDate.replace(regex, '$3-$1-$2');
+						instance.setValue(formattedDate);
+					},
+
 						var triggerNode = instance.getTriggerNode();
 
 						if (event.newVal === triggerNode) {
