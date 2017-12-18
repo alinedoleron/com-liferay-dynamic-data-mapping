@@ -52,6 +52,16 @@ AUI.add(
 						}
 					},
 
+					addErrorMessage: function(msg) {
+						var instance = this;
+
+						var container = instance.get('container');
+
+						instance.set('errorMessage', msg);
+						instance.showErrorMessage(container.one('.input-group-container'));
+						container.one('.form-group').addClass('has-error');
+					},
+
 					formatDate: function(isoDate) {
 						var instance = this;
 
