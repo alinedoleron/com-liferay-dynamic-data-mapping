@@ -118,16 +118,13 @@ AUI.add(
 						return triggerNode;
 					},
 
-					setValue: function(isoDate) {
+					hideError: function() {
 						var instance = this;
 
-						DateField.superclass.setValue.apply(instance, arguments);
+						var container = instance.get('container');
 
-						var formattedValue = instance.get('formattedValue');
-
-						instance.getTriggerNode().val(formattedValue);
-
-						instance.set('value', isoDate);
+						instance.hideErrorMessage();
+						container.one('.form-group').removeClass('has-error');
 					},
 
 					showErrorMessage: function() {
