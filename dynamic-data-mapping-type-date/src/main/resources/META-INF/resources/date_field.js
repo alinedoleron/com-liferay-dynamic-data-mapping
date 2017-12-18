@@ -227,8 +227,29 @@ AUI.add(
 
 						formattedDate = instance._loadMaskPlaceholder(input);
 						instance._validadeFieldDate(input, formattedDate);
+						instance._validateFieldDate(input, formattedDate);
 					},
 
+					_validateFieldDate: function(input, formattedDate) {
+						var instance = this;
+
+						var anySymbolRegex = /[-!$%^&*()_+|~=`{}\[\]:\\";'<>?,.]/;
+						var barRegex = /\//;
+						var stringRegex = /[a-zA-Z\u00C0-\u00FF ]+/i;
+
+						if (input == '') {
+							instance.hideError();
+						}
+						else if (input.match(stringRegex) || input.match(anySymbolRegex)) {
+							instance.setValue('');
+							instance.addErrorMessage('This field does not accept letters');
+						}
+						else {
+							instance.hideError();
+							if (input.length === 8 && !input.match(barRegex)) {
+								instance._formatDate(formattedDate, barRegex);
+							}
+						}
 					}
 				}
 			}
