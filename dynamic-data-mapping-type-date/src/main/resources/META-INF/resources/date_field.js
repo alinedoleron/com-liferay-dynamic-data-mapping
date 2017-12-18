@@ -198,12 +198,14 @@ AUI.add(
 
 					_onActiveInputChange: function(event) {
 						var instance = this;
-
+						
 						var triggerNode = instance.getTriggerNode();
 
 						if (event.newVal === triggerNode) {
 							datePicker.set('mask', instance.get('mask'));
 						}
+
+						instance._loadMaskPlaceholder('');
 					},
 
 					_onClickCalendar: function() {
