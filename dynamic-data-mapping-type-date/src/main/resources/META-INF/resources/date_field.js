@@ -226,7 +226,6 @@ AUI.add(
 						popover.set('visible', false);
 
 						formattedDate = instance._loadMaskPlaceholder(input);
-						instance._validadeFieldDate(input, formattedDate);
 						instance._validateFieldDate(input, formattedDate);
 					},
 
