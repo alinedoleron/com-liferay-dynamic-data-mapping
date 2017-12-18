@@ -42,7 +42,9 @@ AUI.add(
 
 						instance._eventHandlers.push(
 							datePicker.after('selectionChange', A.bind('_afterSelectionChange', instance)),
-							datePicker.on('activeInputChange', A.bind('_onActiveInputChange', instance))
+							datePicker.on('activeInputChange', A.bind('_onActiveInputChange', instance)),
+							instance.bindContainerEvent('input', instance._onStringType, '.trigger'),
+							instance.bindContainerEvent('focusout', instance._focusOut, '.trigger')
 						);
 
 						if (!instance.get('readOnly')) {
