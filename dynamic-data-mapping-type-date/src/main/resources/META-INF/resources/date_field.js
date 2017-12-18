@@ -198,7 +198,7 @@ AUI.add(
 
 					_onActiveInputChange: function(event) {
 						var instance = this;
-						
+
 						var triggerNode = instance.getTriggerNode();
 
 						if (event.newVal === triggerNode) {
@@ -258,6 +258,6 @@ AUI.add(
 	},
 	'',
 	{
-		requires: ['aui-datepicker', 'liferay-ddm-form-renderer-field']
+		requires: ['aui-datepicker', 'liferay-ddm-form-renderer-field', 'liferay-ddm-form-renderer-field-feedback']
 	}
 );
