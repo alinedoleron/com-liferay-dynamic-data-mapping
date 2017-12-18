@@ -192,14 +192,12 @@ AUI.add(
 							container.one('.form-control').setAttribute('placeholder', 'mm/dd/yyyy');
 							break;
 						}
+
+						return formattedDate;
 					},
 
 					_onActiveInputChange: function(event) {
 						var instance = this;
-
-						formattedDate = formattedDate.replace(regex, '$3-$1-$2');
-						instance.setValue(formattedDate);
-					},
 
 						var triggerNode = instance.getTriggerNode();
 
