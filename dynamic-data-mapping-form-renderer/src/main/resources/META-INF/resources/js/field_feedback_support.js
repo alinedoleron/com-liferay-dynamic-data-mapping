@@ -62,12 +62,14 @@ AUI.add(
 				instance._showFeedback('remove');
 			},
 
-			showErrorMessage: function() {
+			showErrorMessage: function(inputNode) {
 				var instance = this;
 
 				var errorMessage = instance.get('errorMessage');
 
-				var inputNode = instance.getInputNode();
+				if (!inputNode) {
+					inputNode = instance.getInputNode();
+				}
 
 				if (errorMessage && inputNode) {
 					inputNode.insert(instance._errorMessageNode, 'after');
