@@ -17,10 +17,17 @@ package com.liferay.dynamic.data.mapping.type.date.internal;
 import com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldTemplateContextContributor;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.render.DDMFormFieldRenderingContext;
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.util.AggregateResourceBundle;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ResourceBundleLoader;
+import com.liferay.portal.kernel.util.ResourceBundleLoaderUtil;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -48,7 +55,34 @@ public class DateDDMFormFieldTemplateContextContributor
 			"predefinedValue",
 			GetterUtil.getString(ddmFormField.getPredefinedValue(), ""));
 
+		Map<String, String> stringsMap = new HashMap<>();
+
+		ResourceBundle resourceBundle = getResourceBundle(
+			ddmFormFieldRenderingContext.getLocale());
+
+		stringsMap.put(
+			"fieldDoesNotAcceptLetters",
+			LanguageUtil.get(resourceBundle, "field-does-not-accept-letters"));
+
+		parameters.put("strings", stringsMap);
+
 		return parameters;
+	}
+
+	protected ResourceBundle getResourceBundle(Locale locale) {
+		Class<?> clazz = getClass();
+
+		ResourceBundleLoader portalResourceBundleLoader =
+			ResourceBundleLoaderUtil.getPortalResourceBundleLoader();
+
+		ResourceBundle portalResourceBundle =
+			portalResourceBundleLoader.loadResourceBundle(locale);
+
+		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+			"content.Language", locale, clazz.getClassLoader());
+
+		return new AggregateResourceBundle(
+			resourceBundle, portalResourceBundle);
 	}
 
 }
