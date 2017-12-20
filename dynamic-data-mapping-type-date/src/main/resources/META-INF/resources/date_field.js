@@ -27,6 +27,12 @@ AUI.add(
 						value: ''
 					},
 
+					strings: {
+						value: {
+							fieldDoesNotAcceptLetters: Liferay.Language.get('field-does-not-accept-letters')
+						}
+					},
+
 					type: {
 						value: 'date'
 					}
@@ -198,10 +204,11 @@ AUI.add(
 
 						var anySymbolRegex = /[-!$%^&*()_+|~=`{}\[\]:\\";'<>?,.]/;
 						var stringRegex = /[a-zA-Z\u00C0-\u00FF ]+/i;
+						var strings = instance.get('strings');
 
 						if (input.match(stringRegex) || input.match(anySymbolRegex)) {
 							instance.setValue('');
-							instance.addErrorMessage(Liferay.Language.get('field-does-not-accept-letters'));
+							instance.addErrorMessage(strings.fieldDoesNotAcceptLetters);
 						}
 						else {
 							instance.hideError();
