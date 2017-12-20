@@ -157,45 +157,6 @@ AUI.add(
 						}
 					},
 
-					_focusOut: function(event) {
-						var instance = this;
-
-						instance.hideError();
-					},
-
-					_formatDate: function(formattedDate, regex) {
-						var instance = this;
-
-						formattedDate = formattedDate.replace(regex, '$3-$1-$2');
-						instance.setValue(formattedDate);
-					},
-
-					_loadMaskPlaceholder: function(input) {
-						var instance = this;
-
-						var container = instance.get('container');
-						var dateFormatLang = instance.get('mask');
-						var dateRegex = /(\d{2})(\d{2})(\d{4})/;
-						var formattedDate;
-
-						switch (dateFormatLang) {
-						case '%d/%m/%Y':
-							formattedDate = input.replace(dateRegex, '$3-$2-$1');
-							container.one('.form-control').setAttribute('placeholder', 'dd/mm/yyyy');
-							break;
-						case '%Y/%m/%d':
-							formattedDate = input.replace(dateRegex, '$1-$2-$3');
-							container.one('.form-control').setAttribute('placeholder', 'yyyy/mm/dd');
-							break;
-						case '%m/%d/%Y':
-							formattedDate = input.replace(dateRegex, '$3-$1-$2');
-							container.one('.form-control').setAttribute('placeholder', 'mm/dd/yyyy');
-							break;
-						}
-
-						return formattedDate;
-					},
-
 					_onActiveInputChange: function(event) {
 						var instance = this;
 
@@ -204,8 +165,6 @@ AUI.add(
 						if (event.newVal === triggerNode) {
 							datePicker.set('mask', instance.get('mask'));
 						}
-
-						instance._loadMaskPlaceholder('');
 					},
 
 					_onClickCalendar: function() {
@@ -216,7 +175,13 @@ AUI.add(
 						datePicker.show();
 					},
 
-					_onStringType: function(event) {
+					_onFocusOut: function(event) {
+						var instance = this;
+
+						instance.hideError();
+					},
+
+					_onInput: function(event) {
 						var instance = this;
 
 						var input = event.target._node.value;
@@ -225,7 +190,6 @@ AUI.add(
 
 						popover.set('visible', false);
 
-						formattedDate = instance._loadMaskPlaceholder(input);
 						instance._validateFieldDate(input, formattedDate);
 					},
 
@@ -233,21 +197,14 @@ AUI.add(
 						var instance = this;
 
 						var anySymbolRegex = /[-!$%^&*()_+|~=`{}\[\]:\\";'<>?,.]/;
-						var barRegex = /\//;
 						var stringRegex = /[a-zA-Z\u00C0-\u00FF ]+/i;
 
-						if (input == '') {
-							instance.hideError();
-						}
-						else if (input.match(stringRegex) || input.match(anySymbolRegex)) {
+						if (input.match(stringRegex) || input.match(anySymbolRegex)) {
 							instance.setValue('');
-							instance.addErrorMessage('This field does not accept letters');
+							instance.addErrorMessage(Liferay.Language.get('field-does-not-accept-letters'));
 						}
 						else {
 							instance.hideError();
-							if (input.length === 8 && !input.match(barRegex)) {
-								instance._formatDate(formattedDate, barRegex);
-							}
 						}
 					}
 				}
