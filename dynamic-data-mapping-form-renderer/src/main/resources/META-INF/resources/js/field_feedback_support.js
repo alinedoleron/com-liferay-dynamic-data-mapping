@@ -145,17 +145,18 @@ AUI.add(
 
 				var container = instance.get('container');
 
-				container.addClass('has-feedback');
-
-				instance.getInputNode().insert(
-					Lang.sub(
-						TPL_FEEDBACK,
-						{
-							icon: icon
-						}
-					),
-					'after'
-				);
+				if (!container.get('children').hasClass('liferay-ddm-form-field-options')[0]) {
+					container.addClass('has-feedback');
+					instance.getInputNode().insert(
+						Lang.sub(
+							TPL_FEEDBACK,
+							{
+								icon: icon
+							}
+						),
+						'after'
+					);
+				}
 			}
 		};
 
