@@ -148,7 +148,7 @@ AUI.add(
 
 				var container = instance.get('container');
 
-				if (!container.get('children').hasClass('liferay-ddm-form-field-options')[0]) {
+				if (!container.one('.liferay-ddm-form-field-options')) {
 					container.addClass('has-feedback');
 					instance.getInputNode().insert(
 						Lang.sub(
