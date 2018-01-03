@@ -1,5 +1,6 @@
 import Component from 'metal-component';
 import Soy from 'metal-soy';
+import Inputmask from "inputmask";
 
 import templates from './date.soy';
 
@@ -18,5 +19,6 @@ if (!window.DDMDate) {
 }
 
 window.DDMDate.render = Date;
+window.DDMDate.Inputmask = Inputmask;
 
 export default Date;
