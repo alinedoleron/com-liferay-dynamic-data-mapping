@@ -27,6 +27,10 @@
 		}
 	}
 
+	.select-arrow-down-container:focus {
+		outline: none;
+	}
+
 	.text-default {
 		font-weight: normal;
 	}
