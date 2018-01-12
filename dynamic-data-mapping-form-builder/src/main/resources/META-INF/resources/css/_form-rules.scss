@@ -327,6 +327,10 @@
 .liferay-ddm-form-rule-builder-footer {
 	margin: $baseline * 3 0;
 	padding: 12px 54px;
+
+	.btn:not(:last-child) {
+		margin-right: 5px;
+	}
 }
 
 .liferay-ddm-form-builder-rule-content {
