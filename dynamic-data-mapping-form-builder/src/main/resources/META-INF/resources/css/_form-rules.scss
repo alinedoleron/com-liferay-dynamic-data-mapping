@@ -18,8 +18,18 @@
 	width: 200px;
 }
 
-.liferay-ddm-form-builder-rule-builder-content .text-default {
-	font-weight: normal;
+.liferay-ddm-form-builder-rule-builder-content {
+	.liferay-ddm-form-builder-rule-condition-list, .liferay-ddm-form-builder-rule-action-list {
+		h4 {
+			align-items: center;
+			display: flex;
+			margin: 0;
+		}
+	}
+
+	.text-default {
+		font-weight: normal;
+	}
 }
 
 .liferay-ddm-form-rule-builder-timeline {
