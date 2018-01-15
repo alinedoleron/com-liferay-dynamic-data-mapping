@@ -129,7 +129,12 @@
 			padding-bottom: 0;
 		}
 
+		.calculate-container {
+			display: flex;
+		}
+
 		.calculate-container-fields {
+			margin-top: 22px;
 			padding: 8px 25px 25px;
 
 			textarea {
@@ -178,8 +183,7 @@
 				}
 
 				.form-builder-select-field {
-					margin-left: -9px;
-					margin-top: -28px;
+					margin-left: -6px;
 
 					.select-field-trigger {
 						display: none;
@@ -199,7 +203,7 @@
 				.calculator-buttons {
 					display: inline-block;
 					margin: 0;
-					overflow: hidden;
+					overflow: inherit;
 					padding: 0;
 
 					li.calculator-button, li.calculator-add-operator-button-area {
