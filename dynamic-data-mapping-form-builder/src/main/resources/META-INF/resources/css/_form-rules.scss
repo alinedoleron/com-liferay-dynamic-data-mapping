@@ -1,3 +1,9 @@
+.liferay-ddm-form-builder-calculator {
+	align-content: center;
+	display: flex;
+	justify-content: center;
+}
+
 .liferay-ddm-form-rule-builder {
 	.ddm-form-basic-info {
 		display: none;
@@ -131,6 +137,7 @@
 
 		.calculate-container {
 			display: flex;
+			flex-wrap: wrap;
 		}
 
 		.calculate-container-fields {
@@ -162,28 +169,21 @@
 			padding-bottom: 30px;
 			padding-top: 30px;
 
-			.liferay-ddm-form-builder-calculator {
-				align-content: center;
-				align-items: center;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-			}
-
 			.calculator-add-field-button-container {
-				display: inline-block;
 				margin: 0 auto;
 				padding: 0;
+				width: 206px;
 
 				.calculator-add-field-button {
 					height: 49px;
 					margin-bottom: 5px;
 					margin-left: 1px;
-					width: 206px;
+					width: inherit;
 				}
 
 				.form-builder-select-field {
-					margin-left: -6px;
+					margin-left: 0;
+					width: 206px;
 
 					.select-field-trigger {
 						display: none;
@@ -207,15 +207,11 @@
 					padding: 0;
 
 					li.calculator-button, li.calculator-add-operator-button-area {
-						background-color: rgba(209, 214, 217, 0.5);
-						color: #869CAD;
 						cursor: pointer;
 						float: left;
-						font-size: 14px;
-						font-weight: 500;
 						height: 49px;
 						margin: 1px;
-						padding-top: 16px;
+						padding-top: 14px;
 						text-align: center;
 						width: 49px;
 					}
@@ -229,7 +225,7 @@
 						}
 
 						.form-builder-select-field {
-							margin-left: -10px;
+							margin-left: -19px;
 							margin-top: -10px;
 							position: absolute;
 
@@ -252,19 +248,12 @@
 					}
 
 					li.button-padding-icons {
+						padding-left: 8px;
 						padding-top: 10px;
 					}
 
 					li.button-two-columns {
 						width: 100px;
-					}
-
-					li.calculator-button:hover, li.calculator-add-operator-button-area:hover {
-						background-color: rgba(209, 214, 217, 0.7);
-					}
-
-					li.calculator-button:active, li.calculator-add-operator-button-area:active {
-						background-color: rgba(209, 214, 217, 0.85);
 					}
 
 					li.border-top-left {
